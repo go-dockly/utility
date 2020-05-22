@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/imdario/mergo"
+	"github.com/stretchr/testify/suite"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -87,6 +88,14 @@ func merge(dst, src interface{}) error {
 	}
 
 	return nil
+}
+
+// DefaultTestLogger returns the log interface to the test suite
+func DefaultTestLogger(s *suite.Suite) *Logger {
+	cfg := new(Config)
+	l, err := New(cfg)
+	s.Require().NoError(err)
+	return l
 }
 
 func (l *Logger) Log(log *logrus.Logger) *logrus.Entry {

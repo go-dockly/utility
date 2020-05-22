@@ -6,8 +6,8 @@ import (
 	"os"
 	"reflect"
 
+	errors "github.com/go-dockly/utility/xerrors"
 	"github.com/go-dockly/utility/xlogger"
-	"github.com/pkg/errors"
 
 	"github.com/imdario/mergo"
 )
