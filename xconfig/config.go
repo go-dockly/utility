@@ -17,12 +17,6 @@ func LoadConfig(cfg interface{}, path string) error {
 		return errors.Wrapf(err, "unable to read file %s", path)
 	}
 
-	err = toml.Unmarshal(bytes, cfg)
-
-	if err != nil {
-		return errors.Wrapf(err, "error while parsing config file %s", string(bytes))
-	}
-
 	switch true {
 	case strings.Contains(path, "toml"):
 		err = toml.Unmarshal(bytes, cfg)
