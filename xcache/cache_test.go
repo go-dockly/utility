@@ -66,6 +66,42 @@ func TestCache(t *testing.T) {
 	}
 }
 
+func TestDelete(t *testing.T) {
+	tc := New(DefaultExpiration, 0)
+	tc.Set("foo", "bar", DefaultExpiration)
+	tc.Delete("foo")
+	x, found := tc.Get("foo")
+	if found {
+		t.Error("foo was found, but it should have been deleted")
+	}
+	if x != nil {
+		t.Error("x is not nil:", x)
+	}
+}
+
+func TestOnEvicted(t *testing.T) {
+	tc := New(DefaultExpiration, 0)
+	tc.Set("foo", 3, DefaultExpiration)
+	if tc.onEvicted != nil {
+		t.Fatal("tc.onEvicted is not nil")
+	}
+	works := false
+	tc.OnEvicted(func(k string, v interface{}) {
+		if k == "foo" && v.(int) == 3 {
+			works = true
+		}
+		tc.Set("bar", 4, DefaultExpiration)
+	})
+	tc.Delete("foo")
+	x, _ := tc.Get("bar")
+	if !works {
+		t.Error("works bool not true")
+	}
+	if x.(int) != 4 {
+		t.Error("bar was not 4")
+	}
+}
+
 func TestCacheTimes(t *testing.T) {
 	var found bool
 

@@ -22,6 +22,7 @@ type cache struct {
 	expiration time.Duration
 	items      map[string]Item
 	mu         sync.RWMutex
+	onEvicted  func(string, interface{})
 	janitor    *janitor
 }
 
@@ -101,8 +102,38 @@ func (c *cache) deleteExpired() {
 	c.mu.Lock()
 	for k, v := range c.items {
 		if v.Expiration > 0 && now > v.Expiration {
-			delete(c.items, k)
+			c.Delete(k)
 		}
 	}
+	c.mu.Unlock()
+}
+
+// Delete an item from the cache. Does nothing if the key is not in the cache.
+func (c *cache) Delete(k string) {
+	c.mu.Lock()
+	v, evicted := c.delete(k)
+	c.mu.Unlock()
+	if evicted {
+		c.onEvicted(k, v)
+	}
+}
+
+func (c *cache) delete(k string) (interface{}, bool) {
+	if c.onEvicted != nil {
+		if v, found := c.items[k]; found {
+			delete(c.items, k)
+			return v.Object, true
+		}
+	}
+	delete(c.items, k)
+	return nil, false
+}
+
+// Sets an (optional) function that is called with the key and value when an
+// item is evicted from the cache. (Including when it is deleted manually, but
+// not when it is overwritten.) Set to nil to disable.
+func (c *cache) OnEvicted(f func(string, interface{})) {
+	c.mu.Lock()
+	c.onEvicted = f
 	c.mu.Unlock()
 }

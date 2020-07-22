@@ -2,12 +2,15 @@ package xlogger
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"reflect"
 	"runtime"
 	"strings"
 
+	"github.com/go-dockly/utility/xerrors/iferr"
 	"github.com/imdario/mergo"
+	"github.com/logrusorgru/aurora"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/pkg/errors"
@@ -113,6 +116,39 @@ func (l *Logger) Log(log *logrus.Logger) *logrus.Entry {
 		return log.WithField("caller", caller).WithField("fName", fName)
 	}
 	return &logrus.Entry{}
+}
+
+var (
+	// GitCommit holds short commit hash of source tree
+	GitCommit string
+	// GitBranch holds current branch name the code is built off
+	GitBranch string
+	// GitState shows whether there are uncommitted changes
+	GitState string
+	// BuildDate holds RFC3339 formatted UTC date (build time)
+	BuildDate string
+	// Version holds contents of ./VERSION file, if exists, or the value passed via the -version option
+	Version string
+)
+
+func (l *Logger) BuildInfo(banner, version, cfgPath, commit, branch, state, date string) {
+
+	log.Printf("loaded config from `%s`\n", aurora.Cyan(cfgPath))
+
+	dir, err := os.Getwd()
+	iferr.Exit(err)
+
+	log.Printf("running from `%s`\n", aurora.Cyan(dir))
+
+	fmt.Println(aurora.Yellow(banner))
+
+	fmt.Printf(`Version: %s
+Commit: %s
+Branch: %s
+Status: %s
+BuildDate: %s
+	
+`, aurora.Yellow(version), aurora.Yellow(commit), branch, state, aurora.Yellow(date))
 }
 
 func (l *Logger) Printf(format string, v ...interface{}) {
