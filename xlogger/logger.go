@@ -8,7 +8,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/go-dockly/utility/xerrors/iferr"
 	"github.com/imdario/mergo"
 	"github.com/logrusorgru/aurora"
 	"github.com/stretchr/testify/suite"
@@ -135,8 +134,7 @@ func (l *Logger) BuildInfo(banner, version, cfgPath, commit, branch, state, date
 
 	log.Printf("loaded config from `%s`\n", aurora.Cyan(cfgPath))
 
-	dir, err := os.Getwd()
-	iferr.Exit(err)
+	dir, _ := os.Getwd()
 
 	log.Printf("running from `%s`\n", aurora.Cyan(dir))
 
