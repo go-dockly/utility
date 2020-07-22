@@ -130,7 +130,7 @@ var (
 	Version string
 )
 
-func (l *Logger) BuildInfo(banner, version, cfgPath, commit, branch, state, date string) {
+func (l *Logger) BuildInfo(banner, cfgPath, version, commit, branch, state, date string) {
 
 	log.Printf("loaded config from `%s`\n", aurora.Cyan(cfgPath))
 
