@@ -140,13 +140,14 @@ func (l *Logger) BuildInfo(banner, version, cfgPath, commit, branch, state, date
 
 	fmt.Println(aurora.Yellow(banner))
 
-	fmt.Printf(`Version: %s
+	fmt.Printf(`LogLevel: %s
+Version: %s
 Commit: %s
 Branch: %s
 Status: %s
 BuildDate: %s
 	
-`, aurora.Yellow(version), aurora.Yellow(commit), branch, state, aurora.Yellow(date))
+`, aurora.Cyan(l.log.Level), aurora.Yellow(version), aurora.Yellow(commit), branch, state, aurora.Yellow(date))
 }
 
 func (l *Logger) Printf(format string, v ...interface{}) {
