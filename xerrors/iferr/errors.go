@@ -95,13 +95,17 @@ func (ie *IfErr) Warn(err error) {
 	}
 }
 
-func Exit(err error) { Default.Exit(err) }
-func (ie *IfErr) Exit(err error) {
+func Exit(err error, message ...string) { Default.Exit(err, message) }
+func (ie *IfErr) Exit(err error, message ...string) {
 	if err != nil {
+		var context = ""
+		if len(message) > 0 {
+			context = message[0] = "\n"
+		}
 		if *ie.Verbose {
-			ie.Log.Errorf("%+v\n", err)
+			ie.Log.Errorf("%s%+v\n", context, err)
 		} else {
-			ie.Log.Errorf("%v\n", err)
+			ie.Log.Errorf("%s%v\n", context, err)
 		}
 		os.Exit(-1)
 	}
