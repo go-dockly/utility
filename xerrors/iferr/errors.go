@@ -1,13 +1,13 @@
 package iferr
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"reflect"
 
 	errors "github.com/go-dockly/utility/xerrors"
 	"github.com/go-dockly/utility/xlogger"
+	"github.com/logrusorgru/aurora"
 
 	"github.com/imdario/mergo"
 )
@@ -88,38 +88,42 @@ func Warn(err error) { Default.Warn(err) }
 func (ie *IfErr) Warn(err error) {
 	if err != nil {
 		if *ie.Verbose {
-			ie.Log.Warnf("%+v\n", err)
+			ie.Log.Warnf("%+v\n", aurora.BrightRed(err))
 		} else {
-			ie.Log.Warnf("%v\n", err)
+			ie.Log.Warnf("%v\n", aurora.BrightRed(err))
 		}
 	}
 }
 
-func Exit(err error, message ...string) { Default.Exit(err, message) }
-func (ie *IfErr) Exit(err error, message ...string) {
+func Exit(err error, ctx ...string) { Default.Exit(err, ctx) }
+func (ie *IfErr) Exit(err error, ctx []string) {
 	if err != nil {
-		var context = ""
-		if len(message) > 0 {
-			context = message[0] = "\n"
+		var context = "no recover: "
+		if len(ctx) > 0 {
+			context = ctx[0]
 		}
 		if *ie.Verbose {
-			ie.Log.Errorf("%s%+v\n", context, err)
+			ie.Log.Error(aurora.Sprintf("%s %+v", aurora.Yellow(context), aurora.BrightRed(err)))
 		} else {
-			ie.Log.Errorf("%s%v\n", context, err)
+			ie.Log.Error(aurora.Sprintf("%s %v", aurora.Yellow(context), aurora.BrightRed(err)))
 		}
 		os.Exit(-1)
 	}
 }
 
-func Panic(err error) { Default.Panic(err) }
-func (ie *IfErr) Panic(err error) {
+func Panic(err error, ctx ...string) { Default.Panic(err, ctx) }
+func (ie *IfErr) Panic(err error, ctx []string) {
 	if err != nil {
 		var message string
+		var context = "panic: "
+		if len(ctx) > 0 {
+			context = ctx[0]
+		}
 
 		if *ie.Verbose {
-			message = fmt.Sprintf("%+v\n", err)
+			message = aurora.Sprintf("%s %+v", aurora.Yellow(context), aurora.BrightRed(err))
 		} else {
-			message = fmt.Sprintf("%v\n", err)
+			message = aurora.Sprintf("%s %v", aurora.Yellow(context), aurora.BrightRed(err))
 		}
 
 		panic(message)
@@ -133,7 +137,7 @@ type Fataler interface {
 func Fail(f Fataler, err error) { Default.Fail(f, err) }
 func (ie *IfErr) Fail(f Fataler, err error) {
 	if err != nil {
-		f.Fatalf("%+v\n", err)
+		f.Fatalf("%+v\n", aurora.BrightRed(err))
 	}
 }
 
