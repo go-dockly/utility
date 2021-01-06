@@ -10,6 +10,7 @@ import (
 
 	"github.com/imdario/mergo"
 	"github.com/logrusorgru/aurora"
+	gelf "github.com/seatgeek/logrus-gelf-formatter"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/pkg/errors"
@@ -51,6 +52,8 @@ func New(inputCfg *Config) (*Logger, error) {
 	var formatter logrus.Formatter
 
 	switch cfg.Format {
+	case "gelf":
+		formatter = &gelf.GelfTimestampFormatter{}
 	case "text":
 		formatter = &logrus.TextFormatter{
 			TimestampFormat: "2006-01-02 15:04:05",
@@ -148,6 +151,10 @@ Status: %s
 BuildDate: %s
 	
 `, aurora.Cyan(l.log.Level), aurora.Yellow(version), aurora.Yellow(commit), branch, state, aurora.Yellow(date))
+}
+
+func (l *Logger) AddHook(hook logrus.Hook) {
+	l.log.Hooks.Add(hook)
 }
 
 func (l *Logger) Printf(format string, v ...interface{}) {
