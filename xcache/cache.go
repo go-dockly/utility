@@ -96,6 +96,24 @@ func (c *cache) Get(k string) (interface{}, bool) {
 	return item.Object, true
 }
 
+// Copies all unexpired items in the cache into a new map and returns it.
+func (c *cache) Items() map[string]Item {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	m := make(map[string]Item, len(c.items))
+	now := time.Now().UnixNano()
+	for k, v := range c.items {
+		// "Inlining" of Expired
+		if v.Expiration > 0 {
+			if now > v.Expiration {
+				continue
+			}
+		}
+		m[k] = v
+	}
+	return m
+}
+
 // delete all expired items from the cache.
 func (c *cache) deleteExpired() {
 	now := time.Now().UnixNano()

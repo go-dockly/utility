@@ -52,5 +52,5 @@ func (cli *Client) Do(method, path string, params io.Reader, result interface{})
 	}
 
 	res.Body.Close()
-	return res.StatusCode, nil
+	return res.StatusCode, err
 }
