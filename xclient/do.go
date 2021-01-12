@@ -3,8 +3,8 @@ package xclient
 import (
 	"fmt"
 	"io"
-	"net/http"
 
+	"github.com/logrusorgru/aurora"
 	"github.com/pkg/errors"
 )
 
@@ -14,6 +14,7 @@ import (
 func (cli *Client) Do(method, path string, params io.Reader, result interface{}) (actualStatusCode int, err error) {
 	url := fmt.Sprintf("%s/%s", cli.baseURL, path)
 
+	cli.log.Debugln("requesting: ", aurora.Yellow(url))
 	req, err := cli.assembleRequest(method, url, params)
 	if err != nil {
 		return 0, err
@@ -21,34 +22,22 @@ func (cli *Client) Do(method, path string, params io.Reader, result interface{})
 
 	res, err := cli.http.Do(req)
 	if err != nil {
-		return 0, errors.Wrap(err, "request failed")
+		for i := 0; i < cli.config.MaxRetry; i++ {
+			err = cli.handleBackoff(i)
+			if err != nil {
+				err = errors.Wrapf(err, "%d backoff exhausted", i)
+				break
+			}
+			res, err = cli.http.Do(req)
+			if err != nil {
+				continue
+			}
+		}
 	}
 
-	for i := 0; i < cli.config.MaxRetry; i++ {
-		switch res.StatusCode {
-		case http.StatusInternalServerError:
-			err = cli.handleBackoff(i)
-			if err != nil {
-				return 0, err
-			}
-
-			continue
-		case http.StatusTooManyRequests:
-			err = cli.handleBackoff(i)
-			if err != nil {
-				return 0, err
-			}
-
-			continue
-		default:
-			break
-		}
-
-		// 	check in case we are not interested in the response body
-		if result != nil {
-			err = cli.readResponse(res.Body, result)
-		}
-
+	// 	check in case we are not interested in the response body
+	if result != nil && err == nil {
+		err = cli.readResponse(res.Body, result)
 	}
 
 	res.Body.Close()
