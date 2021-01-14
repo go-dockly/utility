@@ -51,7 +51,7 @@ func UnShift(s []string, v string) []string {
 
 // Filter ing without allocating
 func Filter(a []string, val []string) []string {
-	var b = a[:0]
+	b := a[:0]
 	for _, x := range a {
 		if Contains(val, x) {
 			b = append(b, x)
