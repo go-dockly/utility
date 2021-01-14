@@ -31,16 +31,6 @@ func (s *SyncSlice) Append(item interface{}) {
 	s.items = append(s.items, item)
 }
 
-// Pop removes the last element from slice and returns both
-func (s *SyncSlice) Pop() (popped interface{}) {
-	s.Lock()
-	defer s.Unlock()
-	var last = len(s.items) - 1
-	popped = s.items[last]
-	s.items = s.items[:last]
-	return popped
-}
-
 // Del removes the element at index from slice
 func (s *SyncSlice) Del(i int) {
 	s.Lock()
@@ -48,12 +38,33 @@ func (s *SyncSlice) Del(i int) {
 	s.items = append(s.items[:i], s.items[i+1:]...)
 }
 
+// Pop removes the last element from slice and returns both
+func (s *SyncSlice) Pop() <-chan SyncSliceItem {
+	var ch = make(chan SyncSliceItem)
+	go func() {
+		s.Lock()
+		defer s.Unlock()
+		var last = len(s.items) - 1
+		ch <- SyncSliceItem{last, s.items[last]}
+		s.items = s.items[:last]
+		close(ch)
+	}()
+
+	return ch
+}
+
 // Shift removes the first element from slice and returns both
-func (s *SyncSlice) Shift() (shifted interface{}) {
-	s.Lock()
-	defer s.Unlock()
-	shifted, s.items = s.items[0], s.items[1:]
-	return
+func (s *SyncSlice) Shift() <-chan SyncSliceItem {
+	var ch = make(chan SyncSliceItem)
+	go func() {
+		s.Lock()
+		defer s.Unlock()
+		ch <- SyncSliceItem{0, s.items[0]}
+		s.items = s.items[1:]
+		close(ch)
+	}()
+
+	return ch
 }
 
 // UnShift adds an element at first index to slice
