@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/imdario/mergo"
 	"github.com/logrusorgru/aurora"
 	gelf "github.com/seatgeek/logrus-gelf-formatter"
@@ -159,6 +160,11 @@ func (l *Logger) Level() string {
 
 func (l *Logger) AddHook(hook logrus.Hook) {
 	l.log.Hooks.Add(hook)
+}
+
+func (l *Logger) Dump(v ...interface{}) {
+	spew.Dump(v...)
+	l.Log(l.log).Info(aurora.Yellow("^^^dump^^^"))
 }
 
 func (l *Logger) Printf(format string, v ...interface{}) {
