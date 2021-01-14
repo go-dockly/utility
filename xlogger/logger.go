@@ -153,6 +153,10 @@ BuildDate: %s
 `, aurora.Cyan(l.log.Level), aurora.Yellow(version), aurora.Yellow(commit), branch, state, aurora.Yellow(date))
 }
 
+func (l *Logger) Level() string {
+	return l.log.Level.String()
+}
+
 func (l *Logger) AddHook(hook logrus.Hook) {
 	l.log.Hooks.Add(hook)
 }

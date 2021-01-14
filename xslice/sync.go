@@ -1,4 +1,4 @@
-package xhelper
+package xslice
 
 import (
 	"sync"
