@@ -9,6 +9,25 @@ func LastElm(s []string) string {
 	return s[len(s)-1]
 }
 
+// Uniq deduplicates the slice
+func Uniq(s []string) []string {
+	var m = make(map[string]struct{})
+	for _, v := range s {
+		if _, ok := m[v]; !ok {
+			m[v] = struct{}{}
+		}
+	}
+
+	var uniq = make([]string, len(m))
+	var i = 0
+	for v := range m {
+		uniq[i] = v
+		i++
+	}
+
+	return uniq
+}
+
 // Cut removes the elements between i and j from the slice
 func Cut(a []string, i, j int) []string {
 	copy(a[i:], a[j:])
@@ -50,10 +69,10 @@ func UnShift(s []string, v string) []string {
 }
 
 // Filter ing without allocating
-func Filter(a []string, val []string) []string {
+func Filter(a []string, val string) []string {
 	b := a[:0]
 	for _, x := range a {
-		if Contains(val, x) {
+		if val == x {
 			b = append(b, x)
 		}
 	}

@@ -9,6 +9,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// todo https://medium.com/mflow/rate-limiting-in-golang-http-client-a22fba15861a
+
 // IAPIClient interface definition
 type IAPIClient interface {
 	Do(method, path string, params io.Reader, result interface{}) (actualStatusCode int, err error)

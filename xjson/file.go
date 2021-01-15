@@ -44,3 +44,21 @@ func Write(path string, toWrite interface{}) error {
 
 	return nil
 }
+
+// func Marshal(v interface{}) ([]byte, error) {
+// 	buffer := bytes.NewBufferString("{")
+// 	first := true
+// 	for key, value := range v {
+// 		jsonValue, err := json.Marshal(value)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		if !first {
+// 			buffer.WriteString(",")
+// 		}
+// 		first = false
+// 		buffer.WriteString(key + ":" + string(jsonValue))
+// 	}
+// 	buffer.WriteString("}")
+// 	return buffer.Bytes(), nil
+// }
