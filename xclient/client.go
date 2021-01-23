@@ -1,6 +1,7 @@
 package xclient
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"time"
@@ -13,7 +14,7 @@ import (
 
 // IAPIClient interface definition
 type IAPIClient interface {
-	Do(method, path string, params io.Reader, result interface{}) (actualStatusCode int, err error)
+	Do(ctx context.Context, method, path string, params io.Reader, result interface{}) (actualStatusCode int, err error)
 }
 
 // Client defines the class implementation for this package
