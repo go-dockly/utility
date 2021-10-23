@@ -2,19 +2,17 @@ package xclient
 
 import (
 	"context"
-	"io"
 	"net/http"
 	"time"
 
-	"github.com/go-dockly/utility/xlogger"
 	"github.com/pkg/errors"
+	"github.com/thisisdevelopment/go-dockly/xlogger"
+	"golang.org/x/time/rate"
 )
-
-// todo https://medium.com/mflow/rate-limiting-in-golang-http-client-a22fba15861a
 
 // IAPIClient interface definition
 type IAPIClient interface {
-	Do(ctx context.Context, method, path string, params io.Reader, result interface{}) (actualStatusCode int, err error)
+	Do(ctx context.Context, method, path string, params, result interface{}) (actualStatusCode int, err error)
 }
 
 // Client defines the class implementation for this package
@@ -27,11 +25,14 @@ type Client struct {
 
 // Config defines the config properties of the package
 type Config struct {
-	CustomHeader  map[string]string
-	ContentFormat string
-	WaitMin       time.Duration
-	WaitMax       time.Duration
-	MaxRetry      int
+	CustomHeader      map[string]string
+	ContentFormat     string
+	TrackProgress     bool
+	RecycleConnection bool
+	Limiter           *rate.Limiter // nil here will use default rate limit
+	MaxRetry          int
+	WaitMin           time.Duration
+	WaitMax           time.Duration
 }
 
 // New returns an initiliazed API client
@@ -72,6 +73,12 @@ func GetDefaultConfig() *Config {
 		WaitMin:       500 * time.Millisecond,
 		WaitMax:       2 * time.Second,
 		MaxRetry:      5,
+		TrackProgress: false,
 		ContentFormat: "application/json",
+		Limiter:       defaultRateLimit(),
 	}
+}
+
+func defaultRateLimit() *rate.Limiter {
+	return rate.NewLimiter(rate.Every(1*time.Second), 10)
 }

@@ -3,9 +3,9 @@ package xclient_test
 import (
 	"testing"
 
-	"github.com/go-dockly/utility/xclient"
-	"github.com/go-dockly/utility/xhelper"
-	"github.com/go-dockly/utility/xlogger"
+	"github.com/thisisdevelopment/go-dockly/xclient"
+	"github.com/thisisdevelopment/go-dockly/xhelper"
+	"github.com/thisisdevelopment/go-dockly/xlogger"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )

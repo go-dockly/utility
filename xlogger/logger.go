@@ -121,6 +121,42 @@ func (l *Logger) Log(log *logrus.Logger) *logrus.Entry {
 	return &logrus.Entry{}
 }
 
+// s.log.WithFields(s.log.ToFields("domain", "test" "language", "nl")).Warn("test")
+func (l *Logger) ToFields(fields ...string) (f logrus.Fields) {
+
+	f = make(logrus.Fields)
+
+	if len(fields)%2 != 0 {
+		l.Warnf("fields should always contain an even amount of elements")
+	}
+
+	for i, v := range fields {
+		// in order of field:value, field:value
+		if i%2 == 1 {
+			continue
+		}
+
+		f[v] = fields[i+1]
+	}
+
+	return f
+}
+
+// WithField proxy method
+func (l *Logger) WithField(key string, value interface{}) *logrus.Entry {
+	return l.Log(l.log).WithField(key, value)
+}
+
+// WithFields proxy method
+func (l *Logger) WithFields(fields logrus.Fields) *logrus.Entry {
+	return l.Log(l.log).WithFields(fields)
+}
+
+// WithError proxy method
+func (l *Logger) WithError(err error) *logrus.Entry {
+	return l.Log(l.log).WithError(err)
+}
+
 var (
 	// GitCommit holds short commit hash of source tree
 	GitCommit string

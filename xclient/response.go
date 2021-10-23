@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"reflect"
 
 	"github.com/pkg/errors"
 )
@@ -16,9 +17,14 @@ func (cli *Client) readResponse(b io.ReadCloser, result interface{}) error {
 		return errors.Wrap(err, "reading response failed")
 	}
 
-	err = json.Unmarshal(body, result)
-	if err != nil {
-		return errors.Wrapf(err, "unmarshal response into expected interface failed for: %s", string(body))
+	switch result.(type) {
+	case *[]byte:
+		// assign the raw byte slice of body to the results interface as is
+		reflect.ValueOf(result).Elem().Set(reflect.ValueOf(body))
+	default:
+		if err = json.Unmarshal(body, result); err != nil {
+			return errors.Wrapf(err, "unmarshal response failed: %s", string(body))
+		}
 	}
 
 	return nil

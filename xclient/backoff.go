@@ -29,5 +29,5 @@ func (cli *Client) backoff(attempts int) time.Duration {
 		sleep = cli.config.WaitMax
 	}
 
-	return sleep * time.Second
+	return sleep
 }
