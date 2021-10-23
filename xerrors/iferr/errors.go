@@ -5,9 +5,9 @@ import (
 	"os"
 	"reflect"
 
+	errors "github.com/go-dockly/utility/xerrors"
+	"github.com/go-dockly/utility/xlogger"
 	"github.com/logrusorgru/aurora"
-	errors "github.com/thisisdevelopment/go-dockly/xerrors"
-	"github.com/thisisdevelopment/go-dockly/xlogger"
 
 	"github.com/imdario/mergo"
 )

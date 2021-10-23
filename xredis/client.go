@@ -5,9 +5,9 @@ import (
 	"crypto/tls"
 	"time"
 
+	"github.com/go-dockly/utility/xlogger"
 	"github.com/go-redis/redis/v8"
 	"github.com/logrusorgru/aurora"
-	"github.com/thisisdevelopment/go-dockly/xlogger"
 )
 
 // ICache defines and exposes the caching layer

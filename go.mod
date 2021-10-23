@@ -1,4 +1,4 @@
-module github.com/thisisdevelopment/go-dockly
+module github.com/go-dockly/utility
 
 go 1.13
 

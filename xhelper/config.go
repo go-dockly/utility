@@ -3,8 +3,8 @@ package xhelper
 import (
 	"strings"
 
+	"github.com/go-dockly/utility/xlogger"
 	"github.com/pelletier/go-toml"
-	"github.com/thisisdevelopment/go-dockly/xlogger"
 	"gopkg.in/yaml.v2"
 )
 

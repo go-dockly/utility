@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-dockly/utility/xlogger"
 	"github.com/pkg/errors"
-	"github.com/thisisdevelopment/go-dockly/xlogger"
 	"golang.org/x/time/rate"
 )
 
